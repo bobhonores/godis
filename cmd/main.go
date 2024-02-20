@@ -58,7 +58,7 @@ func main() {
 		handler, ok := commands.Handlers[command]
 		if !ok {
 			fmt.Println("Invalid command: ", command)
-			writer.Write(resp.Value{Typ: "string", Str: ""})
+			writer.Write(resp.Token{Typ: "string", Str: ""})
 			continue
 		}
 

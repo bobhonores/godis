@@ -46,11 +46,11 @@ func (r *Reader) readInteger() (x int, n int, err error) {
 
 }
 
-func (r *Reader) Read() (Value, error) {
+func (r *Reader) Read() (Token, error) {
 	_type, err := r.reader.ReadByte()
 
 	if err != nil {
-		return Value{}, err
+		return Token{}, err
 	}
 
 	switch _type {
@@ -60,12 +60,12 @@ func (r *Reader) Read() (Value, error) {
 		return r.readBulk()
 	default:
 		fmt.Printf("Unknown type: %v", string(_type))
-		return Value{}, nil
+		return Token{}, nil
 	}
 }
 
-func (r *Reader) readArray() (Value, error) {
-	v := Value{}
+func (r *Reader) readArray() (Token, error) {
+	v := Token{}
 	v.Typ = "array"
 
 	len, _, err := r.readInteger()
@@ -73,7 +73,7 @@ func (r *Reader) readArray() (Value, error) {
 		return v, err
 	}
 
-	v.Array = make([]Value, 0)
+	v.Array = make([]Token, 0)
 	for i := 0; i < len; i++ {
 		val, err := r.Read()
 		if err != nil {
@@ -86,8 +86,8 @@ func (r *Reader) readArray() (Value, error) {
 	return v, nil
 }
 
-func (r *Reader) readBulk() (Value, error) {
-	v := Value{}
+func (r *Reader) readBulk() (Token, error) {
+	v := Token{}
 	v.Typ = "bulk"
 
 	len, _, err := r.readInteger()
