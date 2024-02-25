@@ -3,7 +3,7 @@ package commands
 import (
 	"sync"
 
-	"github.com/bobhonores/slamigan/internal/resp"
+	"github.com/bobhonores/godis/internal/resp"
 )
 
 var hashes = map[string]map[string]string{}

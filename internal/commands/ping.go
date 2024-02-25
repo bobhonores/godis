@@ -1,6 +1,6 @@
 package commands
 
-import "github.com/bobhonores/slamigan/internal/resp"
+import "github.com/bobhonores/godis/internal/resp"
 
 func ping(args []resp.Token) resp.Token {
 	if len(args) == 0 {

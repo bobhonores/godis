@@ -5,25 +5,48 @@ import (
 	"net"
 	"strings"
 
-	"github.com/bobhonores/slamigan/internal/commands"
-	"github.com/bobhonores/slamigan/internal/resp"
+	"github.com/bobhonores/godis/internal/aof"
+	"github.com/bobhonores/godis/internal/commands"
+	"github.com/bobhonores/godis/internal/resp"
 )
 
 func main() {
 	fmt.Println("Listening on port :6379")
 
+	// Creating a server
 	l, err := net.Listen("tcp", ":6379")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
+	// Starting AOF
+	aof, err := aof.NewAof("database.aof")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer aof.Close()
+
+	aof.Read(func(t resp.Token) {
+		command := strings.ToUpper(t.Array[0].Bulk)
+		args := t.Array[1:]
+
+		handler, ok := commands.Handlers[command]
+		if !ok {
+			fmt.Println("Invalid command: ", command)
+			return
+		}
+
+		handler(args)
+	})
+
+	// Listening connections
 	conn, err := l.Accept()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-
 	defer conn.Close()
 
 	for {
@@ -60,6 +83,10 @@ func main() {
 			fmt.Println("Invalid command: ", command)
 			writer.Write(resp.Token{Typ: "string", Str: ""})
 			continue
+		}
+
+		if command == "SET" || command == "HSET" {
+			aof.Write(value)
 		}
 
 		result := handler(args)

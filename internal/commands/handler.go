@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"github.com/bobhonores/slamigan/internal/resp"
+	"github.com/bobhonores/godis/internal/resp"
 )
 
 var Handlers = map[string]func([]resp.Token) resp.Token{
